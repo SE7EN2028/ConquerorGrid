@@ -15,10 +15,10 @@ export function StatsBar() {
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <StatCard icon={Users} label="Online" value={online} accent="#22c55e" />
+      <StatCard icon={Users} label="Online" value={online} accent="#34d399" />
       <StatCard icon={Flag} label="Claimed" value={stats?.claimed ?? 0} accent="#6366f1" />
-      <StatCard icon={Square} label="Remaining" value={stats?.remaining ?? 0} accent="#7c7c92" />
-      <StatCard icon={Crown} label="Your cells" value={myCells} accent="#f5b301" />
+      <StatCard icon={Square} label="Remaining" value={stats?.remaining ?? 0} accent="#868ca3" />
+      <StatCard icon={Crown} label="Your cells" value={myCells} accent="#fbbf24" />
     </div>
   );
 }

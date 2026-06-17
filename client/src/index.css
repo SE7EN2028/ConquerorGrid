@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #08080c;
-  --color-surface: #101019;
-  --color-surface-2: #181826;
-  --color-border: #262636;
-  --color-muted: #7c7c92;
-  --color-text: #e8e8f0;
+  --color-bg: #05060a;
+  --color-surface: #0c0e16;
+  --color-surface-2: #141826;
+  --color-border: #1e2333;
+  --color-muted: #868ca3;
+  --color-text: #eef1f8;
   --color-accent: #6366f1;
-  --color-accent-soft: #4f46e5;
-  --color-danger: #f43f5e;
-  --color-gold: #f5b301;
+  --color-accent-soft: #818cf8;
+  --color-live: #34d399;
+  --color-gold: #fbbf24;
+  --color-danger: #fb7185;
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Russo One", ui-sans-serif, system-ui, sans-serif;
 }
 
 * {
@@ -27,13 +29,21 @@ body,
 
 body {
   margin: 0;
-  background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(110% 90% at 50% -10%, rgba(99, 102, 241, 0.1), transparent 55%),
+    radial-gradient(80% 60% at 100% 0%, rgba(52, 211, 153, 0.05), transparent 50%),
+    var(--color-bg);
+  background-attachment: fixed;
 }
 
-/* thin dark scrollbars to match the dashboard */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -42,25 +52,129 @@ body {
   background: var(--color-border);
   border-radius: 9999px;
 }
+::-webkit-scrollbar-thumb:hover {
+  background: #2c3346;
+}
 
+/* surface card used across every panel */
 .panel {
-  background: var(--color-surface);
+  background: linear-gradient(180deg, var(--color-surface), var(--color-surface-2));
   border: 1px solid var(--color-border);
-  border-radius: 14px;
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* small uppercase section/stat label */
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.glow {
+  text-shadow: 0 0 14px rgba(99, 102, 241, 0.45);
+}
+
+/* faint tactical grid behind the board */
+.grid-frame {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
 @keyframes cellPop {
   0% {
-    transform: scale(0.55);
+    transform: scale(0.5);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55);
   }
-  60% {
-    transform: scale(1.12);
+  55% {
+    transform: scale(1.18);
+    box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.3);
   }
   100% {
     transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
   }
 }
 
 .cell-pop {
-  animation: cellPop 0.35s ease-out;
+  animation: cellPop 0.4s ease-out;
+}
+
+/* tactical corner brackets via <HudFrame> */
+.hud-corner {
+  position: absolute;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  border-color: var(--color-accent);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.hud-tl {
+  top: 7px;
+  left: 7px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+  border-top-left-radius: 5px;
+}
+.hud-tr {
+  top: 7px;
+  right: 7px;
+  border-top: 2px solid;
+  border-right: 2px solid;
+  border-top-right-radius: 5px;
+}
+.hud-bl {
+  bottom: 7px;
+  left: 7px;
+  border-bottom: 2px solid;
+  border-left: 2px solid;
+  border-bottom-left-radius: 5px;
+}
+.hud-br {
+  bottom: 7px;
+  right: 7px;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+  border-bottom-right-radius: 5px;
+}
+
+/* slow drifting ambient glow for depth */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  background:
+    radial-gradient(38% 38% at 22% 22%, rgba(99, 102, 241, 0.12), transparent 60%),
+    radial-gradient(36% 36% at 80% 30%, rgba(52, 211, 153, 0.08), transparent 60%);
+  filter: blur(44px);
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(-3%, -2%, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

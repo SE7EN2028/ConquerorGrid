@@ -9,7 +9,7 @@ export const apiLimiter = rateLimit({
 
 export const joinLimiter = rateLimit({
   windowMs: 60_000,
-  max: 10,
+  max: 30,
   standardHeaders: true,
   legacyHeaders: false,
 });

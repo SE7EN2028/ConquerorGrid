@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { CountUp } from "./ui/CountUp";
 
 interface Props {
   icon: LucideIcon;
@@ -7,18 +8,26 @@ interface Props {
   accent?: string;
 }
 
-export function StatCard({ icon: Icon, label, value, accent }: Props) {
+export function StatCard({ icon: Icon, label, value, accent = "#6366f1" }: Props) {
   return (
-    <div className="panel flex items-center gap-3 px-4 py-3">
+    <div className="panel group relative overflow-hidden px-4 py-3.5">
       <div
-        className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-surface-2"
-        style={accent ? { color: accent } : undefined}
-      >
-        <Icon size={18} />
-      </div>
-      <div className="min-w-0">
-        <div className="text-xs text-muted">{label}</div>
-        <div className="text-lg font-bold leading-tight">{value}</div>
+        className="absolute inset-x-0 top-0 h-px opacity-60"
+        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+      />
+      <div className="flex items-center gap-3">
+        <div
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border"
+          style={{ color: accent, borderColor: `${accent}40`, background: `${accent}14` }}
+        >
+          <Icon size={18} />
+        </div>
+        <div className="min-w-0">
+          <div className="label">{label}</div>
+          <div className="font-display text-2xl leading-tight tnum">
+            {typeof value === "number" ? <CountUp value={value} /> : value}
+          </div>
+        </div>
       </div>
     </div>
   );

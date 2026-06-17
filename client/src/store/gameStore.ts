@@ -126,7 +126,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   pushActivity: (item) =>
     set((state) => ({
-      activity: [{ ...item, id: activityId++ }, ...state.activity].slice(0, 40),
+      activity: [{ ...item, id: activityId++ } as ActivityItem, ...state.activity].slice(0, 40),
     })),
 
   startCooldown: (ms) => set({ cooldownUntil: Date.now() + ms }),
