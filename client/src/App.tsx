@@ -7,6 +7,7 @@ import { StatsBar } from "./components/StatsBar";
 import { Grid } from "./components/Grid";
 import { Leaderboard } from "./components/Leaderboard";
 import { ActivityFeed } from "./components/ActivityFeed";
+import { Toast } from "./components/Toast";
 
 export default function App() {
   const status = useGameStore((s) => s.status);
@@ -41,6 +42,7 @@ export default function App() {
           <ActivityFeed />
         </aside>
       </div>
+      <Toast />
     </div>
   );
 }

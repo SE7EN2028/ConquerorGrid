@@ -1,10 +1,12 @@
-import { Swords } from "lucide-react";
+import { Swords, Volume2, VolumeX } from "lucide-react";
 import { useGameStore } from "../store/gameStore";
 import { CooldownPill } from "./CooldownPill";
 
 export function Header() {
   const user = useGameStore((s) => s.user);
   const online = useGameStore((s) => s.online);
+  const muted = useGameStore((s) => s.muted);
+  const toggleMuted = useGameStore((s) => s.toggleMuted);
 
   return (
     <header className="border-b border-border bg-surface/60 backdrop-blur">
@@ -26,6 +28,14 @@ export function Header() {
           </span>
 
           <CooldownPill />
+
+          <button
+            onClick={toggleMuted}
+            className="grid h-7 w-7 place-items-center rounded-full border border-border bg-surface-2 text-muted transition hover:text-text"
+            title={muted ? "Unmute" : "Mute"}
+          >
+            {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+          </button>
 
           {user && (
             <span className="flex items-center gap-2 rounded-full border border-border bg-surface-2 px-3 py-1 text-sm">

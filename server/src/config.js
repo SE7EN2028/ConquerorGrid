@@ -12,6 +12,7 @@ export const config = {
     rows: num(process.env.GRID_ROWS, 24),
   },
   cooldownMs: num(process.env.CLAIM_COOLDOWN, 3) * 1000,
+  enforceAdjacency: process.env.ENFORCE_ADJACENCY !== "false",
 };
 
 export const totalCells = config.grid.cols * config.grid.rows;

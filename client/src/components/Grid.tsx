@@ -1,10 +1,28 @@
 import { useCallback, useMemo, useState } from "react";
 import { useGameStore } from "../store/gameStore";
 import { claimCell } from "../lib/claim";
+import { blip } from "../lib/sound";
 import { CellTile } from "./CellTile";
+import { PanZoom } from "./PanZoom";
+import { Minimap } from "./Minimap";
 import type { Cell } from "../lib/types";
 
 const COOLDOWN_MS = 3000;
+
+function claimError(reason?: string) {
+  switch (reason) {
+    case "cooldown":
+      return "Easy - wait for the cooldown";
+    case "not adjacent":
+      return "You can only expand next to your own cells";
+    case "already yours":
+      return "You already hold that one";
+    case "join first":
+      return "Join the game first";
+    default:
+      return "Couldn't claim that cell";
+  }
+}
 
 export function Grid() {
   const cols = useGameStore((s) => s.cols);
@@ -19,11 +37,16 @@ export function Grid() {
 
   const onClaim = useCallback(
     async (index: number) => {
-      if (Date.now() < useGameStore.getState().cooldownUntil) return;
+      const state = useGameStore.getState();
+      if (Date.now() < state.cooldownUntil) return;
+
       const res = await claimCell(index);
       if (res.ok && res.cell) {
         applyCellUpdate(res.cell);
         startCooldown(COOLDOWN_MS);
+        if (!state.muted) blip();
+      } else {
+        state.flash(claimError(res.reason));
       }
     },
     [applyCellUpdate, startCooldown]
@@ -39,24 +62,28 @@ export function Grid() {
       className="relative"
       onMouseMove={(e) => setPointer({ x: e.clientX, y: e.clientY })}
     >
-      <div
-        className="grid gap-[3px]"
-        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
-      >
-        {ids.map((id) => {
-          const cell = cells[id];
-          if (!cell) return null;
-          return (
-            <CellTile
-              key={id}
-              cell={cell}
-              mine={cell.owner?.id === userId}
-              onClaim={onClaim}
-              onHover={setHovered}
-            />
-          );
-        })}
-      </div>
+      <PanZoom>
+        <div
+          className="grid gap-[3px]"
+          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+        >
+          {ids.map((id) => {
+            const cell = cells[id];
+            if (!cell) return null;
+            return (
+              <CellTile
+                key={id}
+                cell={cell}
+                mine={cell.owner?.id === userId}
+                onClaim={onClaim}
+                onHover={setHovered}
+              />
+            );
+          })}
+        </div>
+      </PanZoom>
+
+      <Minimap />
 
       {hovered && <CellTooltip cell={hovered} x={pointer.x} y={pointer.y} />}
     </div>

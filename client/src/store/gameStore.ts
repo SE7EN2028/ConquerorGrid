@@ -11,6 +11,16 @@ import type {
 
 type Status = "idle" | "joining" | "ready";
 
+interface ViewState {
+  scale: number;
+  tx: number;
+  ty: number;
+  baseW: number;
+  baseH: number;
+  vw: number;
+  vh: number;
+}
+
 interface GameState {
   status: Status;
   error: string | null;
@@ -25,6 +35,9 @@ interface GameState {
   online: number;
   activity: ActivityItem[];
   cooldownUntil: number;
+  view: ViewState;
+  muted: boolean;
+  notice: string | null;
 
   join: (username: string) => Promise<void>;
   restore: () => Promise<void>;
@@ -37,6 +50,9 @@ interface GameState {
   setOnline: (online: number) => void;
   pushActivity: (item: Omit<ActivityItem, "id">) => void;
   startCooldown: (ms: number) => void;
+  setView: (patch: Partial<ViewState>) => void;
+  toggleMuted: () => void;
+  flash: (message: string) => void;
 }
 
 let activityId = 0;
@@ -55,6 +71,9 @@ export const useGameStore = create<GameState>((set, get) => ({
   online: 0,
   activity: [],
   cooldownUntil: 0,
+  view: { scale: 1, tx: 0, ty: 0, baseW: 0, baseH: 0, vw: 0, vh: 0 },
+  muted: false,
+  notice: null,
 
   join: async (username) => {
     set({ status: "joining", error: null });
@@ -111,4 +130,13 @@ export const useGameStore = create<GameState>((set, get) => ({
     })),
 
   startCooldown: (ms) => set({ cooldownUntil: Date.now() + ms }),
+  setView: (patch) => set((state) => ({ view: { ...state.view, ...patch } })),
+  toggleMuted: () => set((state) => ({ muted: !state.muted })),
+
+  flash: (message) => {
+    set({ notice: message });
+    setTimeout(() => {
+      if (get().notice === message) set({ notice: null });
+    }, 2000);
+  },
 }));
