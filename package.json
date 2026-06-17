@@ -1,0 +1,20 @@
+{
+  "name": "conquerorgrid",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real-time shared territory grid. Claim cells, fight for the map.",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,magenta \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm run dev -w server",
+    "dev:client": "npm run dev -w client",
+    "seed": "npm run seed -w server",
+    "build": "npm run build -w client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
