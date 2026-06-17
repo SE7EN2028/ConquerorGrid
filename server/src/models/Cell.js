@@ -14,6 +14,9 @@ const cellSchema = new mongoose.Schema(
   { timestamps: false }
 );
 
+// leaderboard aggregation and adjacency checks both query by owner
+cellSchema.index({ ownerId: 1 });
+
 cellSchema.methods.toClient = function () {
   return {
     id: this.index,
