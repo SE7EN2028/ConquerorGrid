@@ -23,6 +23,7 @@ cellSchema.methods.toClient = function () {
       ? { id: this.ownerId, name: this.ownerName, color: this.ownerColor }
       : null,
     claimedAt: this.claimedAt,
+    version: this.version,
   };
 };
 
