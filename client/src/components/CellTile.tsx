@@ -37,8 +37,8 @@ function CellTileBase({ cell, mine, claimable, onClaim, onHover }: Props) {
       onMouseLeave={() => onHover(null)}
       style={style}
       className={[
-        "cell aspect-square cursor-pointer rounded-[4px] transition-[background-color,box-shadow,filter] duration-150 hover:z-10",
-        owned ? "cell-owned hover:brightness-110" : "bg-surface-2 hover:bg-border",
+        "cell aspect-square cursor-pointer rounded-[4px] transition-[background-color,box-shadow,filter] duration-150",
+        owned ? "cell-owned" : "bg-surface-2",
         mine ? "cell-mine" : "",
         expand ? "cell-frontier" : "",
         capture ? "cell-capture" : "",

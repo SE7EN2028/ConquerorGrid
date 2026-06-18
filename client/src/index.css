@@ -130,8 +130,13 @@ body {
 .cell-capture::after {
   border: 1.5px dashed var(--color-danger);
 }
-.cell-frontier:hover {
-  background: color-mix(in srgb, var(--color-accent) 32%, var(--color-surface-2));
+/* one calm hover for every cell: a thin crisp outline, no colour/brightness
+   jumps, so sweeping across the board stays quiet. outline doesn't disturb the
+   box-shadow depth on owned/your tiles. */
+.cell:hover {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: -1px;
+  z-index: 3;
 }
 
 @keyframes frontierPulse {
