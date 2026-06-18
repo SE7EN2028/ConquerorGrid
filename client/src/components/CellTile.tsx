@@ -28,9 +28,9 @@ function CellTileBase({ cell, mine, onClaim, onHover }: Props) {
       onMouseLeave={() => onHover(null)}
       style={owned ? { backgroundColor: cell.owner!.color } : undefined}
       className={[
-        "relative aspect-square cursor-pointer rounded-[4px] transition duration-150 hover:z-10 hover:scale-[1.18]",
+        "aspect-square cursor-pointer rounded-[4px] transition-[background-color,box-shadow,filter] duration-150",
         owned ? "hover:brightness-125" : "bg-surface-2 hover:bg-border",
-        mine ? "ring-1 ring-white/80" : "ring-1 ring-transparent hover:ring-white/30",
+        mine ? "ring-1 ring-white/80" : "ring-1 ring-transparent hover:ring-white/40",
         pop ? "cell-pop" : "",
       ].join(" ")}
     />

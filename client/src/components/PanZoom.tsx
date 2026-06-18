@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode, type PointerEvent, type WheelEvent } from "react";
+import { useEffect, useRef, type ReactNode, type PointerEvent } from "react";
 import { Plus, Minus, Maximize } from "lucide-react";
 import { useGameStore } from "../store/gameStore";
 
@@ -54,11 +54,6 @@ export function PanZoom({ children }: { children: ReactNode }) {
     apply(next, px - cx * next, py - cy * next);
   };
 
-  const onWheel = (e: WheelEvent) => {
-    const rect = containerRef.current!.getBoundingClientRect();
-    zoomAround(e.clientX - rect.left, e.clientY - rect.top, e.deltaY < 0 ? 1.12 : 1 / 1.12);
-  };
-
   const zoomButton = (factor: number) => {
     const view = useGameStore.getState().view;
     zoomAround(view.vw / 2, view.vh / 2, factor);
@@ -98,7 +93,6 @@ export function PanZoom({ children }: { children: ReactNode }) {
   return (
     <div
       ref={containerRef}
-      onWheel={onWheel}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}

@@ -44,7 +44,7 @@ export function Dashboard() {
                 <Map size={14} className="text-accent" /> Battlefield
               </span>
               <span className="hidden text-xs text-muted sm:block">
-                click to claim · drag to pan · scroll to zoom
+                click to claim · drag to pan · +/− to zoom
               </span>
             </div>
             <div className="grid-frame p-3">
