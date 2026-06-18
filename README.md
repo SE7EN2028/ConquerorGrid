@@ -35,6 +35,25 @@ npm run dev                           # server + client together
 
 Client runs on http://localhost:5173, API on http://localhost:4000.
 
+## Deploy
+
+Ships as a **single web service** — Express serves the REST API, the live
+Socket.IO connections, and the built client from one origin (no separate
+frontend host, no CORS setup).
+
+| Setting | Value |
+| --- | --- |
+| Build | `npm install && npm run build` |
+| Start | `node server/src/index.js` |
+| Health check | `/api/health` |
+| Required env | `MONGODB_URI` |
+| Optional env | `GRID_COLS` (30), `GRID_ROWS` (24), `CLAIM_COOLDOWN` (3), `ENFORCE_ADJACENCY` (true) |
+
+`PORT` is injected by the host. On Render, **New → Blueprint** picks up
+`render.yaml` and only asks for `MONGODB_URI`. The grid is seeded once per
+database with `node server/src/database/seed.js`. Full guide in
+[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
 ## Docs
 
 - [Setup](docs/SETUP.md)
