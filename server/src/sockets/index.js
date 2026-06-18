@@ -4,6 +4,7 @@ import { getUserByToken } from "../services/userService.js";
 import { getStats, getLeaderboard } from "../services/statsService.js";
 import { claimCell } from "../services/claimService.js";
 import { checkCooldown, markClaim } from "./cooldown.js";
+import { addPresence, removePresence } from "./presence.js";
 
 export function attachSockets(server) {
   const io = new Server(server, { cors: { origin: config.clientOrigin } });
@@ -19,6 +20,7 @@ export function attachSockets(server) {
 
     const user = socket.data.user;
     if (user) {
+      addPresence(user.username);
       io.emit("activity", {
         type: "join",
         user: { name: user.username, color: user.color },
@@ -50,7 +52,10 @@ export function attachSockets(server) {
       scheduleSummary(io);
     });
 
-    socket.on("disconnect", () => broadcastPresence(io));
+    socket.on("disconnect", () => {
+      if (user) removePresence(user.username);
+      broadcastPresence(io);
+    });
   });
 
   return io;
