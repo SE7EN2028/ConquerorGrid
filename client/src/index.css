@@ -89,23 +89,82 @@ body {
   background-size: 22px 22px;
 }
 
+/* ---- grid cells -------------------------------------------------------- */
+.cell {
+  position: relative;
+}
+
+/* owned tiles get inset shading so they read as solid pieces, not flat fills */
+.cell-owned {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.35);
+}
+
+/* your own territory: persistent bright ring so you spot your land instantly */
+.cell-mine {
+  z-index: 1;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.85),
+    0 0 9px rgba(255, 255, 255, 0.35);
+}
+
+/* claimable cells: pulsing dashed ring drawn on ::after so layout never shifts */
+.cell-frontier,
+.cell-capture {
+  cursor: crosshair;
+}
+.cell-frontier::after,
+.cell-capture::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 5px;
+  pointer-events: none;
+  animation: frontierPulse 1.4s ease-in-out infinite;
+}
+.cell-frontier::after {
+  border: 1.5px dashed var(--color-accent-soft);
+}
+.cell-capture::after {
+  border: 1.5px dashed var(--color-danger);
+}
+.cell-frontier:hover {
+  background: color-mix(in srgb, var(--color-accent) 32%, var(--color-surface-2));
+}
+
+@keyframes frontierPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.05);
+  }
+}
+
+/* capture flash uses the new owner's colour for clear, satisfying feedback */
 @keyframes cellPop {
   0% {
-    transform: scale(0.5);
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55);
+    transform: scale(0.55);
+    box-shadow: 0 0 0 0 var(--owner, rgba(255, 255, 255, 0.55));
   }
   55% {
-    transform: scale(1.18);
-    box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.3);
+    transform: scale(1.16);
+    box-shadow: 0 0 15px 4px var(--owner, rgba(255, 255, 255, 0.3));
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    box-shadow: 0 0 0 0 transparent;
   }
 }
 
 .cell-pop {
-  animation: cellPop 0.4s ease-out;
+  z-index: 2;
+  animation: cellPop 0.42s ease-out;
 }
 
 /* tactical corner brackets via <HudFrame> */
