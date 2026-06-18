@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { useCooldown } from "../hooks/useCooldown";
 
 // Radial countdown that rides the cursor while the claim cooldown is active,
@@ -8,7 +9,8 @@ export function CooldownCursor({ x, y }: { x: number; y: number }) {
 
   const deg = Math.round(progress * 360);
 
-  return (
+  // Portal to <body> so a transformed ancestor can't offset this fixed node.
+  return createPortal(
     <div
       className="pointer-events-none fixed z-40 -translate-x-1/2 -translate-y-1/2"
       style={{ left: x, top: y }}
@@ -23,6 +25,7 @@ export function CooldownCursor({ x, y }: { x: number; y: number }) {
           {(remaining / 1000).toFixed(1)}
         </span>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

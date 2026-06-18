@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { Crosshair, Flag, Lock, Swords } from "lucide-react";
 import { useGameStore } from "../store/gameStore";
 import { claimCell } from "../lib/claim";
@@ -180,7 +181,10 @@ function CellTooltip(props: TooltipProps) {
   const { cell, rect } = props;
   const { icon: Icon, label, color } = action(props);
 
-  return (
+  // Portal to <body>: a transformed ancestor (e.g. the GSAP-animated .reveal
+  // wrapper) would otherwise become the containing block for this fixed node
+  // and throw its position off.
+  return createPortal(
     <div
       className="pointer-events-none fixed z-40 rounded-lg border border-border bg-surface px-3 py-2 text-xs shadow-xl"
       style={{ ...place(rect), width: TIP_W }}
@@ -200,6 +204,7 @@ function CellTooltip(props: TooltipProps) {
       <div className="mt-1.5 flex items-center gap-1.5 font-medium" style={{ color }}>
         <Icon size={12} /> {label}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
