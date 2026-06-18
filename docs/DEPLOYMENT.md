@@ -1,83 +1,62 @@
 # Deployment
 
-The server and client deploy separately: the server is a long-running Node
-process (it holds WebSocket connections), the client is static files.
+One service runs everything: the Express server serves the REST API, holds the
+live Socket.IO connections, and serves the built client from the same origin.
+No separate frontend host, no CORS wiring.
+
+## Database
+
+Use a hosted MongoDB — Atlas is simplest. Create a cluster, add a database user,
+and allow access from your host's IP (or `0.0.0.0/0` if the platform's IPs
+aren't fixed). Keep the connection string for the server's env.
 
 ## One-click on Render (Blueprint)
 
-`render.yaml` at the repo root defines both services. In Render, create a new
-Blueprint from this repo (branch `main`) and apply it, then:
-
-1. Set the three secrets it asks for:
-   - **conquerorgrid-api** → `MONGODB_URI` (Atlas string), `CLIENT_ORIGIN` (the
-     web service URL, e.g. `https://conquerorgrid-web.onrender.com`)
-   - **conquerorgrid-web** → `VITE_SERVER_URL` (the API URL, e.g.
-     `https://conquerorgrid-api.onrender.com`)
-2. Seed the grid once — open a Shell on the API service and run:
-   ```bash
-   npm run seed:prod
-   ```
-3. `VITE_SERVER_URL` is baked in at build time, so redeploy the web service
-   after you set it.
+`render.yaml` at the repo root defines a single web service. In Render: **New →
+Blueprint**, pick this repo (branch `main`), apply it, then set `MONGODB_URI`
+when prompted. That's the only required secret.
 
 > Free instances sleep when idle, which drops open sockets. Use a paid plan to
 > keep the board live.
 
-The rest of this doc covers the equivalent manual setup on any host.
+## Manual web service (any Node host)
 
-## Database
+Create one **Web Service** from the repo root:
 
-Use a hosted MongoDB — Atlas is the simplest. Create a cluster, add a database
-user, and allow access from your host's IP (or `0.0.0.0/0` if the platform's IPs
-aren't fixed). Keep the connection string for the server's env.
-
-## Server (Render / Railway / Fly.io)
-
-A plain Node web service. Settings:
-
-- **Root directory:** `server`
-- **Build:** `npm install`
-- **Start:** `npm start`
+- **Root directory:** *(repo root — leave blank)*
+- **Build:** `npm install && npm run build`
+- **Start:** `node server/src/index.js`
 - **Env:**
 
   ```
-  PORT=4000
   MONGODB_URI=<your atlas string>
-  CLIENT_ORIGIN=https://your-client-domain
   GRID_COLS=30
   GRID_ROWS=24
   CLAIM_COOLDOWN=3
   ENFORCE_ADJACENCY=true
   ```
 
-Seed the grid once after the first deploy (a one-off job/shell on the platform):
+`PORT` is injected by the platform (the server reads `process.env.PORT`).
+`CLIENT_ORIGIN` is optional — same-origin serving reflects any origin; set it
+only if you want to lock the API to a specific domain.
+
+The build step compiles the client to `client/dist`; the server serves it
+automatically. Any non-`/api` GET falls back to `index.html`.
+
+## Seeding
+
+The grid is created once per database. If the database is empty, open a Shell on
+the service and run:
 
 ```bash
-npm run seed
+node server/src/database/seed.js
 ```
 
-Make sure the platform doesn't sleep the instance — sleeping drops every open
-socket.
-
-## Client (Vercel / Netlify)
-
-A static Vite build.
-
-- **Root directory:** `client`
-- **Build:** `npm install && npm run build`
-- **Output:** `dist`
-- **Env:**
-
-  ```
-  VITE_SERVER_URL=https://your-server-domain
-  ```
-
-`VITE_SERVER_URL` is where the client opens the socket and sends REST calls in
-production (the dev proxy only applies locally).
+(An Atlas database that was already seeded locally needs nothing.)
 
 ## Checklist
 
-- [ ] `CLIENT_ORIGIN` on the server matches the deployed client URL (CORS)
-- [ ] `VITE_SERVER_URL` on the client points at the deployed server
+- [ ] `MONGODB_URI` set and the cluster allows the host's IP
+- [ ] Build ran `npm run build` (client compiled to `client/dist`)
 - [ ] Grid seeded once against the production database
-- [ ] Server instance stays awake (no idle sleep)
+- [ ] Instance stays awake (no idle sleep) so sockets survive

@@ -1,7 +1,8 @@
 import { io, type Socket } from "socket.io-client";
 import { getToken } from "./api";
 
-const URL = import.meta.env.VITE_SERVER_URL || "http://localhost:4000";
+
+const URL = import.meta.env.VITE_SERVER_URL || undefined;
 
 let socket: Socket | null = null;
 

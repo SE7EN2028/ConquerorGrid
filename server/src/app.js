@@ -1,3 +1,5 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import { config } from "./config.js";
@@ -21,6 +23,18 @@ export function createApp() {
   app.get("/api/grid", grid.get);
   app.get("/api/stats", stats.stats);
   app.get("/api/leaderboard", stats.leaderboard);
+
+  const clientDist = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "../../client/dist"
+  );
+  app.use(express.static(clientDist));
+  app.use((req, res, next) => {
+    if (req.method === "GET" && !req.path.startsWith("/api")) {
+      return res.sendFile(path.join(clientDist, "index.html"));
+    }
+    next();
+  });
 
   app.use((req, res) => res.status(404).json({ error: "not found" }));
   app.use((err, req, res, next) => {
