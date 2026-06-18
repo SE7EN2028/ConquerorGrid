@@ -3,6 +3,28 @@
 The server and client deploy separately: the server is a long-running Node
 process (it holds WebSocket connections), the client is static files.
 
+## One-click on Render (Blueprint)
+
+`render.yaml` at the repo root defines both services. In Render, create a new
+Blueprint from this repo (branch `main`) and apply it, then:
+
+1. Set the three secrets it asks for:
+   - **conquerorgrid-api** → `MONGODB_URI` (Atlas string), `CLIENT_ORIGIN` (the
+     web service URL, e.g. `https://conquerorgrid-web.onrender.com`)
+   - **conquerorgrid-web** → `VITE_SERVER_URL` (the API URL, e.g.
+     `https://conquerorgrid-api.onrender.com`)
+2. Seed the grid once — open a Shell on the API service and run:
+   ```bash
+   npm run seed:prod
+   ```
+3. `VITE_SERVER_URL` is baked in at build time, so redeploy the web service
+   after you set it.
+
+> Free instances sleep when idle, which drops open sockets. Use a paid plan to
+> keep the board live.
+
+The rest of this doc covers the equivalent manual setup on any host.
+
 ## Database
 
 Use a hosted MongoDB — Atlas is the simplest. Create a cluster, add a database

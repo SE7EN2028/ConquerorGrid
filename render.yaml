@@ -1,0 +1,43 @@
+# Render Blueprint — deploys the API (Node web service) and the client
+# (static Vite build) from this monorepo. After the first deploy, fill in the
+# three `sync: false` vars below, then seed the grid once (see docs/DEPLOYMENT.md).
+services:
+  # --- API: Express + Socket.IO, holds the live grid and open sockets ------
+  - name: conquerorgrid-api
+    type: web
+    runtime: node
+    rootDir: server
+    plan: free # NOTE: free instances sleep when idle, which drops every open
+    # socket. Bump to a paid plan to keep the realtime board alive.
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/stats
+    envVars:
+      - key: MONGODB_URI
+        sync: false # your MongoDB Atlas connection string
+      - key: CLIENT_ORIGIN
+        sync: false # the deployed web URL, e.g. https://conquerorgrid-web.onrender.com
+      - key: GRID_COLS
+        value: "30"
+      - key: GRID_ROWS
+        value: "24"
+      - key: CLAIM_COOLDOWN
+        value: "3"
+      - key: ENFORCE_ADJACENCY
+        value: "true"
+    # PORT is injected by Render; the server reads process.env.PORT.
+
+  # --- Web: static Vite build ----------------------------------------------
+  - name: conquerorgrid-web
+    type: web
+    runtime: static
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_SERVER_URL
+        sync: false # the deployed API URL, e.g. https://conquerorgrid-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
