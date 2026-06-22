@@ -2,6 +2,10 @@
 
 A live multiplayer territory game where every click matters. Capture blocks, expand your control, and compete against other players on a shared world that updates instantly. Fast, interactive, and designed for real-time competition.
 
+**▶ Live demo: [conquerorgrid.onrender.com](https://conquerorgrid.onrender.com)**
+
+> Hosted on Render's free tier — the first request after it's been idle can take ~30s to wake.
+
 ## Features
 
 - Shared grid (720 cells by default, configurable) that updates live over WebSockets
